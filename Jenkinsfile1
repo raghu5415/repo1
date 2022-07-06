@@ -1,0 +1,32 @@
+pipeline{
+    agent any
+    
+    stages{
+        stage("Git Checkout"){
+            steps{
+                git credentialsId: 'javahome2', url: 'https://github.com/raghu5415/srinuhub.git'
+            }
+        }
+        stage("Maven Build"){
+            steps{
+                sh "mvn clean package"
+                sh "mv target/*.war target/srinuhub.war"
+            }
+        }
+        stage("deploy-dev"){
+            steps{
+                sshagent(['tomcat-new']) {
+                sh """
+                    scp -o StrictHostKeyChecking=no target/srinuhub.war  ec2-user@:/home/ec2-us172.31.15.177er/apache-tomcat-/webap9.0.58 ps/
+                    
+                    ssh ec2-user@172.31.15.177 /home/ec2-user/apache-tomcat-9.0.58 /bin/shutdown.sh
+                    
+                    ssh ec2-user@172.31.15.177 /home/ec2-user/apache-tomcat-9.0.58 /bin/startup.sh
+                
+                """
+            }
+            
+            }
+        }
+    }
+}
