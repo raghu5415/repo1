@@ -4,20 +4,20 @@ pipeline{
     stages{
         stage("Git Checkout"){
             steps{
-                git credentialsId: 'javahome2', url: 'https://github.com/raghu5415/srinuhub.git'
+                git credentialsId: 'javahome2', url: 'https://github.com/raghu5415/repo1.git'
             }
         }
         stage("Maven Build"){
             steps{
                 sh "mvn clean package"
-                sh "mv target/*.war target/srinuhub.war"
+                sh "mv target/*.war target/repo1.war"
             }
         }
         stage("deploy-dev"){
             steps{
                 sshagent(['tomcat-new']) {
                 sh """
-                    scp -o StrictHostKeyChecking=no target/srinuhub.war  ec2-user@:/home/ec2-us172.31.15.177er/apache-tomcat-/webap9.0.58 ps/
+                    scp -o StrictHostKeyChecking=no target/repo1.war  ec2-user@:/home/ec2-us172.31.15.177er/apache-tomcat-/webap9.0.58 ps/
                     
                     ssh ec2-user@172.31.15.177 /home/ec2-user/apache-tomcat-9.0.58 /bin/shutdown.sh
                     
